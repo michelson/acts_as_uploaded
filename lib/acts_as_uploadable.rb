@@ -5,11 +5,11 @@ module Artenlinea
       
       def self.included(base)
             @@content_types      = ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg']
-            @@attachment_options = {
-                :size =>  15.kilobyte..2.megabytes ,
-                :content_type => @@content_types,
-                :s3_bucket => 'animalita' 
-              }
+          #  @@attachment_options = {
+          #     :size =>  15.kilobyte..2.megabytes ,
+          #      :content_type => @@content_types,
+          #      :s3_bucket => 'animalita' 
+          #    }
               
             mattr_reader :content_types, :attachment_options
             attr_accessor :uploaded_data
@@ -23,12 +23,47 @@ module Artenlinea
           base.extend ClassMethods
       end
       
+       
+      
       module ClassMethods
+        
+        def acts_as_uploadable(options = {})
+          
+          
+           options[:min_size]         ||= 1
+            options[:max_size]         ||= 1.megabyte
+            options[:size]             ||=  1.megabyte #(options[:min_size]..options[:max_size])
+            options[:thumbnails]       ||= {}
+            options[:content_type] ||= ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'] #@@content_types
+            options[:thumbnail_class]  ||= self
+            options[:s3_access]        ||= :public_read
+            options[:s3_bucket] ||= 'animalita'
+            cattr_accessor :attachment_options
+               self.attachment_options = options
+            
 
-        def acts_as_uploadable
          include Artenlinea::Acts::Uploadable::InstanceMethods
           extend Artenlinea::Acts::Uploadable::SingletonMethods
+          
+          
+          
         end
+        
+         # Examples:
+          #   has_attachment :max_size => 1.kilobyte
+          #   has_attachment :size => 1.megabyte..2.megabytes
+          #   has_attachment :content_type => 'application/pdf'
+          #   has_attachment :content_type => ['application/pdf', 'application/msword', 'text/plain']
+          #   has_attachment :content_type => :image, :resize_to => [50,50]
+          #   has_attachment :content_type => ['application/pdf', :image], :resize_to => 'x50'
+          #   has_attachment :thumbnails => { :thumb => [50, 50], :geometry => 'x50' }
+          #   has_attachment :storage => :file_system, :path_prefix => 'public/files'
+          #   has_attachment :storage => :file_system, :path_prefix => 'public/files',
+          #     :content_type => :image, :resize_to => [50,50]
+          #   has_attachment :storage => :file_system, :path_prefix => 'public/files',
+          #     :thumbnails => { :thumb => [50, 50], :geometry => 'x50' }
+          #   has_attachment :storage => :s3
+          
         
       end
 
@@ -48,6 +83,8 @@ module Artenlinea
               write_attribute(:content_type, file_attributes[:content_type])
               write_attribute(:size, file_attributes[:size])
               write_attribute(:path, file_attributes[:path])
+              
+              
             end
           end
         
