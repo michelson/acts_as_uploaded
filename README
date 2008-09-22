@@ -8,7 +8,7 @@ gem requires
 
 the amazon s3 gem is required and  "image_science" too
 
-also it requires a nginx_upload module
+also this plugin works with the nginx_upload module
 
 
 
