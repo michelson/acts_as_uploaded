@@ -1,5 +1,5 @@
 
-
+include ActionView::Helpers::NumberHelper
 # ActsAsUploadable
 module Artenlinea
   module Acts #:nodoc:

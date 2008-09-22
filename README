@@ -36,7 +36,6 @@ Example goes here.
 Todo:
 
 a template for a form and a js upload_progress bar (css , js)
-integrate a ActionView::Helpers::Number into the plugin
 
 delete the old s3 file during the update
 create a methos to check if there is a s3 connection in the case the s3 service is down,
