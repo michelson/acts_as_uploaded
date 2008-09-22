@@ -28,8 +28,6 @@ module Artenlinea
       module ClassMethods
         
         def acts_as_uploadable(options = {})
-          
-          
            options[:min_size]         ||= 1
             options[:max_size]         ||= 1.megabyte
             options[:size]             ||=  1.megabyte #(options[:min_size]..options[:max_size])
@@ -38,6 +36,8 @@ module Artenlinea
             options[:thumbnail_class]  ||= self
             options[:s3_access]        ||= :public_read
             options[:s3_bucket] ||= 'animalita'
+            options[:path] ||= self.to_s.tableize
+            
             cattr_accessor :attachment_options
                self.attachment_options = options
             
@@ -136,14 +136,14 @@ module Artenlinea
 
          #esto me retorna solo el path sin el archivo
          def local_path(type = 'original')
-            dir_photos = File.join(RAILS_ROOT,'public','art_works',self.id.to_s,type)
+            dir_photos = File.join(RAILS_ROOT,'public',attachment_options[:path],self.id.to_s,type)
            base_path = dir_photos
            return  base_path     
          end
 
          #esto me retorna  el path con el archivo
          def local_path_with_file(type = 'original')
-            dir_photos = File.join(RAILS_ROOT,'public','art_works',self.id.to_s,type)
+            dir_photos = File.join(RAILS_ROOT,'public',attachment_options[:path],self.id.to_s,type)
             base_path = dir_photos +"/"
             image_path = self.filename
             return  base_path + image_path    
@@ -152,7 +152,7 @@ module Artenlinea
          #el path remoto para s3
          def remote_path(type = 'original')
           # base_path = "#{self.user_id}/art_works/#{self.id}/#{type}/"
-           base_path = "art_works/#{self.id}/#{type}/"
+           base_path = "#{attachment_options[:path]}/#{self.id}/#{type}/"
            return  base_path + self.filename
          end  
          #el path completo de la imagen en s3
