@@ -13,19 +13,7 @@ module Artenlinea
               
               
               
-              def uploaded_data() nil; end
-
-              def uploaded_data=(file_attributes)
-                unless file_attributes.blank?
-                  @file = File.open(file_attributes[:path])
-                  write_attribute(:filename, sanitize_filename(file_attributes[:name]))
-                  write_attribute(:content_type, file_attributes[:content_type])
-                  write_attribute(:size, file_attributes[:size])
-                  write_attribute(:path, file_attributes[:path])
-                  write_attribute(:user_id, 1)
-
-                end
-              end
+             
               
             
             mattr_reader :content_types, :attachment_options
@@ -46,8 +34,7 @@ module Artenlinea
       module ClassMethods
 
         def acts_as_uploadable
-         # include Artenlinea::Acts::Uploadable::InstanceMethods
-          send :include, InstanceMethods
+         include Artenlinea::Acts::Uploadable::InstanceMethods
           extend Artenlinea::Acts::Uploadable::SingletonMethods
         end
         
@@ -60,6 +47,19 @@ module Artenlinea
         # Add instance methods here
         
         ##aqui upload_data=
+         def uploaded_data() nil; end
+
+          def uploaded_data=(file_attributes)
+            unless file_attributes.blank?
+              @file = File.open(file_attributes[:path])
+              write_attribute(:filename, sanitize_filename(file_attributes[:name]))
+              write_attribute(:content_type, file_attributes[:content_type])
+              write_attribute(:size, file_attributes[:size])
+              write_attribute(:path, file_attributes[:path])
+              write_attribute(:user_id, 1)
+
+            end
+          end
         
         def validate_size
           if @file.blank?
