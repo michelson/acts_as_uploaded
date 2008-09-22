@@ -4,18 +4,13 @@ module Artenlinea
     module Uploadable #:nodoc:
       
       def self.included(base)
-         @@content_types      = ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg']
+            @@content_types      = ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg']
             @@attachment_options = {
                 :size =>  15.kilobyte..2.megabytes ,
                 :content_type => @@content_types,
                 :s3_bucket => 'animalita' 
               }
               
-              
-              
-             
-              
-            
             mattr_reader :content_types, :attachment_options
             attr_accessor :uploaded_data
                #base.class_inheritable_accessor :attachment_options
@@ -24,10 +19,7 @@ module Artenlinea
                 base.after_destroy :delete_all_s3_copies
                 base.validates_presence_of :title
                 base.validate              :attachment_attributes_valid?, :if=>:file_required?
-                
-                
-                
-                
+
           base.extend ClassMethods
       end
       
@@ -46,7 +38,7 @@ module Artenlinea
       module InstanceMethods
         # Add instance methods here
         
-        ##aqui upload_data=
+        #upload_data=
          def uploaded_data() nil; end
 
           def uploaded_data=(file_attributes)
@@ -56,8 +48,6 @@ module Artenlinea
               write_attribute(:content_type, file_attributes[:content_type])
               write_attribute(:size, file_attributes[:size])
               write_attribute(:path, file_attributes[:path])
-              write_attribute(:user_id, 1)
-
             end
           end
         
@@ -82,7 +72,7 @@ module Artenlinea
           delete_all_local_copies  
         end
         
-        ##aqui sanitizar
+        #sanitizar
          def sanitize_filename(filename)
               # get only the filename, not the whole path (from IE)
               just_filename = File.basename(filename)
