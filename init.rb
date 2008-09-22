@@ -1,6 +1,5 @@
 # Include hook code here
 require "image_science"
-
 require 'acts_as_uploadable'
 require "view_helpers" 
 require 'irregular_science'

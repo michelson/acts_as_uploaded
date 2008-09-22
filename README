@@ -2,31 +2,48 @@ ActsAsUploadable
 ================
 
 Introduction goes here.
-is a extremely light uploader for rails, it provides funcionality to upload a file , procesing with image science, and store in s3, this plugin is inspired by attachment_fu plugin
+is a extremely light uploader for rails, it provides funcionality to upload a file , procesing with image science, and store in s3, this plugin is inspired by attachment_fu plugin.
+
+gem requires
+
+the amazon s3 gem is required and  "image_science" too
+
+also it requires a nginx_upload module
+
 
 
 Example
 =======
 
-to use this , in your model do
+to use this , in your model do :
 
 include ActionView::Helpers::NumberHelper
 require 'aws/s3' ## configure your s3 connection in enviroment, see aws/s3 gem examples
-require "image_science"
-require 'irregular_science'
+
 
 class Photo < ActiveRecord::Base
   acts_as_uploadable 
   :content_type => ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'],  
- :bucket => 'my_s3_bucket' 
-  , :path=>'art_works'
+ :bucket => 'my_s3_bucket' ,
+  , :path=>'art_works/self.user_id'
   
 
-    
-
+  .....
+.....
 end
 
 Example goes here.
+
+Todo:
+
+a template for a form and a js upload_progress bar (css , js)
+integrate a ActionView::Helpers::Number into the plugin
+
+delete the old s3 file during the update
+create a methos to check if there is a s3 connection in the case the s3 service is down,
+create a strategy to cache the file if that happends (not eliminate de local copies), create a new field "in_s3" or something like that
+#create un method in_s3? and ,send_to_cron
+
 
 
 Copyright (c) 2008 [Miguel Michelson Martinez], released under the MIT license

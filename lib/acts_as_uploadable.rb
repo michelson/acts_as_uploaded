@@ -1,6 +1,4 @@
-#FALTA ELIMINAR LA OTRA (vieja) FOTO EN EL UPDATE.
-#FALTA COMPROBAR CONEXION A S3, estrategia para guardar en cache local si es que no se subió la imagen a s3 , y dejar el proceso pendiente en un task , dejar un campo "in_s3?"
-#crear un methodo in_s3? ,send_to_cron 
+
 
 # ActsAsUploadable
 module Artenlinea
@@ -38,21 +36,7 @@ module Artenlinea
           include Artenlinea::Acts::Uploadable::InstanceMethods
           extend Artenlinea::Acts::Uploadable::SingletonMethods
         end
-        
-         # Examples:
-          #   has_attachment :max_size => 1.kilobyte
-          #   has_attachment :size => 1.megabyte..2.megabytes
-          #   has_attachment :content_type => 'application/pdf'
-          #   has_attachment :content_type => ['application/pdf', 'application/msword', 'text/plain']
-          #   has_attachment :content_type => :image, :resize_to => [50,50]
-          #   has_attachment :content_type => ['application/pdf', :image], :resize_to => 'x50'
-          #   has_attachment :thumbnails => { :thumb => [50, 50], :geometry => 'x50' }
-          #   has_attachment :storage => :file_system, :path_prefix => 'public/files'
-          #   has_attachment :storage => :file_system, :path_prefix => 'public/files',
-          #     :content_type => :image, :resize_to => [50,50]
-          #   has_attachment :storage => :file_system, :path_prefix => 'public/files',
-          #     :thumbnails => { :thumb => [50, 50], :geometry => 'x50' }
-          #   has_attachment :storage => :s3
+    
       end
 
       module SingletonMethods
