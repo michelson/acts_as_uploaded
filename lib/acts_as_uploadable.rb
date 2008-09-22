@@ -1,3 +1,7 @@
+#FALTA ELIMINAR LA OTRA (vieja) FOTO EN EL UPDATE.
+#FALTA COMPROBAR CONEXION A S3, estrategia para guardar en cache local si es que no se subió la imagen a s3 , y dejar el proceso pendiente en un task , dejar un campo "in_s3?"
+#crear un methodo in_s3? ,send_to_cron 
+
 # ActsAsUploadable
 module Artenlinea
   module Acts #:nodoc:
@@ -5,12 +9,6 @@ module Artenlinea
       
       def self.included(base)
             @@content_types      = ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg']
-          #  @@attachment_options = {
-          #     :size =>  15.kilobyte..2.megabytes ,
-          #      :content_type => @@content_types,
-          #      :s3_bucket => 'animalita' 
-          #    }
-              
             mattr_reader :content_types, :attachment_options
             attr_accessor :uploaded_data
                #base.class_inheritable_accessor :attachment_options
@@ -22,9 +20,7 @@ module Artenlinea
 
           base.extend ClassMethods
       end
-      
-       
-      
+
       module ClassMethods
         
         def acts_as_uploadable(options = {})
@@ -32,21 +28,15 @@ module Artenlinea
             options[:max_size]         ||= 1.megabyte
             options[:size]             ||=  1.megabyte #(options[:min_size]..options[:max_size])
             options[:thumbnails]       ||= {}
-            options[:content_type] ||= ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'] #@@content_types
+            options[:content_type] ||= ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'] 
             options[:thumbnail_class]  ||= self
             options[:s3_access]        ||= :public_read
             options[:s3_bucket] ||= 'animalita'
             options[:path] ||= self.to_s.tableize
-            
             cattr_accessor :attachment_options
                self.attachment_options = options
-            
-
-         include Artenlinea::Acts::Uploadable::InstanceMethods
+          include Artenlinea::Acts::Uploadable::InstanceMethods
           extend Artenlinea::Acts::Uploadable::SingletonMethods
-          
-          
-          
         end
         
          # Examples:
@@ -63,8 +53,6 @@ module Artenlinea
           #   has_attachment :storage => :file_system, :path_prefix => 'public/files',
           #     :thumbnails => { :thumb => [50, 50], :geometry => 'x50' }
           #   has_attachment :storage => :s3
-          
-        
       end
 
       module SingletonMethods
@@ -83,8 +71,6 @@ module Artenlinea
               write_attribute(:content_type, file_attributes[:content_type])
               write_attribute(:size, file_attributes[:size])
               write_attribute(:path, file_attributes[:path])
-              
-              
             end
           end
         
@@ -101,7 +87,6 @@ module Artenlinea
           !@file.blank? 
         end
         
-
         def write_file
           write_to_local
           process_img
@@ -125,7 +110,6 @@ module Artenlinea
             end
           end
         
-
         ##file operations
         def write_to_local(type = 'original')
               FileUtils.mkdir_p(self.local_path(type)) unless File.exists?(self.local_path(type))
@@ -190,7 +174,6 @@ module Artenlinea
            end
          end
 
-
          def delete_all_local_copies  
            #Borro las fotos de mi pc!!
            %w( original thumb resize).each do |type|
@@ -207,7 +190,6 @@ module Artenlinea
              end
          end 
          
-
       end
     end
   end
