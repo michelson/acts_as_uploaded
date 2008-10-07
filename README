@@ -22,10 +22,8 @@ require 'aws/s3' ## configure your s3 connection in enviroment, see aws/s3 gem e
 
 
 class Photo < ActiveRecord::Base
-  acts_as_uploadable 
-  :content_type => ['image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'],  
- :bucket => 'my_s3_bucket' ,
-  , :path=>'art_works/self.user_id'
+acts_as_uploadable  :content_type => ['application/pdf','image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'],    :s3_bucket => 'artenlinea' , :path=>"art_works" 
+
   
   .....
 	.....
