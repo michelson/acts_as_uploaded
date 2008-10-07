@@ -1,4 +1,3 @@
-
 include ActionView::Helpers::NumberHelper
 # ActsAsUploadable
 module Artenlinea
@@ -10,12 +9,6 @@ module Artenlinea
             mattr_reader :content_types, :attachment_options
             attr_accessor :uploaded_data
                #base.class_inheritable_accessor :attachment_options
-                base.validate_on_create :validate_size
-                base.after_save :write_file,:if=>:file_required?
-                base.after_destroy :delete_all_s3_copies
-                base.validates_presence_of :title
-                base.validate              :attachment_attributes_valid?, :if=>:file_required?
-
           base.extend ClassMethods
       end
 
@@ -33,6 +26,12 @@ module Artenlinea
             options[:path] ||= self.to_s.tableize
             cattr_accessor :attachment_options
                self.attachment_options = options
+
+            validate_on_create :validate_size
+            after_save :write_file ,:if=>:file_required?
+            after_destroy :delete_all_s3_copies
+            validate              :attachment_attributes_valid? , :if=>:file_required?
+               
           include Artenlinea::Acts::Uploadable::InstanceMethods
           extend Artenlinea::Acts::Uploadable::SingletonMethods
         end
@@ -44,14 +43,13 @@ module Artenlinea
 
       module InstanceMethods
         # Add instance methods here
-        
         #upload_data=
          def uploaded_data() nil; end
 
           def uploaded_data=(file_attributes)
             unless file_attributes.blank?
               @file = File.open(file_attributes[:path])
-              write_attribute(:filename, sanitize_filename(file_attributes[:name]))
+              write_attribute(:image, sanitize_image(file_attributes[:name]))
               write_attribute(:content_type, file_attributes[:content_type])
               write_attribute(:size, file_attributes[:size])
               write_attribute(:path, file_attributes[:path])
@@ -63,7 +61,7 @@ module Artenlinea
            errors.add(:uploaded_data,'is required.')
           end
           if !@file.blank? && self.size.to_i > 3.megabyte
-            errors.add(:filename,'es muy grande ' + number_to_human_size(self.size.to_i)  )
+            errors.add(:image,'es muy grande ' + number_to_human_size(self.size.to_i)  )
           end
         end
         
@@ -79,11 +77,11 @@ module Artenlinea
         end
         
         #sanitizar
-         def sanitize_filename(filename)
-              # get only the filename, not the whole path (from IE)
-              just_filename = File.basename(filename)
+         def sanitize_image(image)
+              # get only the image, not the whole path (from IE)
+              just_image = File.basename(image)
               # replace all none alphanumeric, underscore or perioids with underscore
-             just_filename.gsub(/[^\w\.\_]/,'_')
+             just_image.gsub(/[^\w\.\_]/,'_')
           end
           
          # validates the size and content_type attributes according to the current model's options
@@ -97,7 +95,7 @@ module Artenlinea
         ##file operations
         def write_to_local(type = 'original')
               FileUtils.mkdir_p(self.local_path(type)) unless File.exists?(self.local_path(type))
-              File.open("#{self.local_path}/#{self.filename}",'w') do |file|
+              File.open(self.local_path_with_file,'w') do |file|
               file.puts @file.read
               end 
            end
@@ -113,15 +111,15 @@ module Artenlinea
          def local_path_with_file(type = 'original')
             dir_photos = File.join(RAILS_ROOT,'public',attachment_options[:path],self.id.to_s,type)
             base_path = dir_photos +"/"
-            image_path = self.filename
+            image_path = self.image
             return  base_path + image_path    
          end
          
          #el path remoto para s3
          def remote_path(type = 'original')
           # base_path = "#{self.user_id}/art_works/#{self.id}/#{type}/"
-           base_path = "#{attachment_options[:path]}/#{self.id}/#{type}/"
-           return  base_path + self.filename
+           base_path = "#{self.user_id}/#{attachment_options[:path]}/#{self.id}/#{type}/"
+           return  base_path + self.image
          end  
          #el path completo de la imagen en s3
          def s3_path(type = 'original')
