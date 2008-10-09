@@ -24,8 +24,8 @@ module Artenlinea
             options[:s3_access]        ||= :public_read
             options[:s3_bucket] ||= 'animalita'
             options[:path] ||= self.to_s.tableize
-            cattr_accessor :attachment_options
-               self.attachment_options = options
+             write_inheritable_attribute :attachment_options, options
+             class_inheritable_reader :attachment_options
 
             validate_on_create :validate_size
             after_save :write_file ,:if=>:file_required?
