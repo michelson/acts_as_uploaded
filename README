@@ -10,7 +10,8 @@ gem requires
 
 the amazon s3 gem is required and  "image_science" too
 
-this plugin works with in conjunction with nginx_upload module
+this plugin works with in conjunction with nginx_upload module,
+http://www.grid.net.ru/nginx/upload.en.html, thanks Valery Kholodkov !
 
 starling and simplified_starling plugin
 
