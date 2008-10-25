@@ -4,42 +4,63 @@ ActsAsUploadable
 Introduction goes here.
 is a extremely light uploader for rails, it provides funcionality to upload a file , procesing with image science, and store in s3, this plugin is inspired by attachment_fu plugin.
 
+this plugin works with in conjunction with nginx_upload module
+
 gem requires
 
 the amazon s3 gem is required and  "image_science" too
 
-also this plugin works with in conjunction with nginx_upload module
+this plugin works with in conjunction with nginx_upload module
 
+starling and simplified_starling plugin
 
+the model required fields are
+
+create_table "art_works", :force => true do |t|
+ t.string   "image",          :limit => 200,      :default => "",    :null => false
+ t.boolean  "in_s3"
+ t.string   "old_filename"
+end
 
 Example
 =======
 
 to use this , in your model do :
 
-include ActionView::Helpers::NumberHelper
-require 'aws/s3' ## configure your s3 connection in enviroment, see aws/s3 gem examples
-
 
 class Photo < ActiveRecord::Base
-acts_as_uploadable  :content_type => ['application/pdf','image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'],    :s3_bucket => 'artenlinea' , :path=>"art_works" 
 
-  
-  .....
-	.....
+acts_as_uploadable  :content_type => ['application/pdf','image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg'],    :s3_bucket => 'artenlinea' , :path=>"art_works" ,
+:thumbnails => {:options=>[
+  {:type=>'resize_to_width',:size=>550,:name=>'resize'},
+  {:type=>'cropped_thumbnail',:size=>100,:name=>'thumb'}
+  ]}
+....
+....
 end
 
-Example goes here.
+if you dont need to check for the file in creation include this attribute option  
+
+:file_needed_on_create=>0,
+  
+
+
+
+/**********************************************************************/
+i added in_s3 field to check if the file is in filesystem or in s3 .
+when you update a image the old file name keeps in old_filename and the new one is in image field, the old one y deleted from s3 in a starling process.
+
+when you create a image , first it copies to file system, and, in background, it sends to starling the s3 upload to make the upload process faster , 
+
+when the file is on s3 the local copies are deleted, this happens in update and create methods
+
+if the file is in local file system, the view helper links to local file , otherwise it look for s3 file when in_s3 == true
 
 Todo:
 
 a template for a form and a js upload_progress bar (css , js)
 
-delete the old s3 file during the update
-create a methos to check if there is a s3 connection in the case the s3 service is down,
-create a strategy to cache the file if that happends (not eliminate de local copies), create a new field "in_s3" or something like that
-#create un method in_s3? and ,send_to_cron
-
+create a method to check if there is a s3 connection in the case the s3 service is down,
 
 
 Copyright (c) 2008 [Miguel Michelson Martinez], released under the MIT license

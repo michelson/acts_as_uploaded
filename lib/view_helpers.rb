@@ -8,8 +8,19 @@ module UploadableViewHelper
        border = options[:border].nil? ? '' : options[:border]
        style = options[:style].nil? ? '' : options[:style]
        type = options[:type].nil? ? 'thumb' : options[:type]
+       alt = options[:alt].nil? ? '' : options[:alt]
        folder = options[:folder].nil? ? 'fotos_artistas_mini' : options[:folder]
-       image_remota = "<img src=\"#{image.s3_path(type)} \" style=\"#{style}\" border=\"#{border}\" class=\"#{classe}\" #{h} #{w}   />"
+       unless image.image.nil?
+           unless image.in_s3 == false 
+             path = image.s3_path(type)
+           else
+             path = image.simple_path_with_file(type)
+           end
+             image_remota = "<img src=\"#{path} \" alt=\"#{alt}\" style=\"#{style}\" border=\"#{border}\" class=\"#{classe}\" #{h} #{w}   />"
+           else
+             image_remota = 'nada'
+      end
+     
        return image_remota
      end
     
